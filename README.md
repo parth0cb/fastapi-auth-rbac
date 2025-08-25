@@ -1,17 +1,20 @@
-# FastAPI User Authentication System with RBAC
+# FastAPI Auth RBAC
 
-This project is a simple yet secure user authentication system using FastAPI, SQLAlchemy, JWT, and bcrypt. It includes user registration, login, role-based access control, password hashing, and protected routes.
+This project is a secure RBAC based user authentication system built using FastAPI, SQLAlchemy, JWT, and bcrypt. It provides user registration, login, password management, and role assignment features, with secure route protection based on roles.
 
 ## Features
 
 * User Registration
 * User Login with JWT Authentication
-* Role-based Access Control (`admin`, `user`)
+* Role-based Access Control
 * Password Hashing (bcrypt)
 * Change Password Functionality
 * Admin user auto-creation on startup
 * SQLite database support
-* Environment-based configuration
+* Admin can create roles
+* Admin can change roles of users
+* Admin can delete users
+* Login session expires after 30 minutes
 
 ---
 
@@ -19,18 +22,22 @@ This project is a simple yet secure user authentication system using FastAPI, SQ
 
 ```
 fastapi-auth-rbac/
-├── app/
-│   ├── auth.py             # Authentication and password handling
-│   ├── database.py         # Database connection and session setup
-│   ├── main.py             # Main FastAPI application
-│   ├── models.py           # SQLAlchemy models
-│   ├── roles.py            # Role-based access control
-│   └── schemas.py          # Pydantic schemas
-├── users.db                # SQLite database file
-├── .env                    # Environment variables
-├── README.md               # Project documentation
-├── requirements.txt        # Python dependencies
-└── venv/                   # Python virtual environment
+│
+├── app/                   # Application source code
+│   ├── auth.py            # Authentication logic (login, password hashing, JWT)
+│   ├── database.py        # Database connection and session setup
+│   ├── main.py            # Main FastAPI app with routes
+│   ├── models.py          # SQLAlchemy models
+│   ├── roles.py           # Role checking dependencies
+│   └── schemas.py         # Pydantic schemas for request/response models
+│
+├── users.db               # SQLite database file (auto-generated)
+├── .env                   # Environment variables
+├── .env.example           # Example env file
+├── .gitignore             # Git ignored files
+├── requirements.txt       # Project dependencies
+├── README.md              # Project documentation
+└── LICENCE                # MIT Licence
 ```
 
 ---
@@ -59,7 +66,13 @@ pip install -r requirements.txt
 
 ### 4. Environment Variables
 
-Create a `.env` file in the root directory:
+Create a `.env` file by copying the example:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` as needed:
 
 ```
 ADMIN_USERNAME=admin
@@ -78,102 +91,57 @@ uvicorn app.main:app --reload
 
 Server will start at `http://127.0.0.1:8000`
 
+You can access the interactive API documentation (Swagger UI) at:
+`http://127.0.0.1:8000/docs`
+
 ---
 
 ## API Endpoints
 
-### `POST /register`
+### Authentication
 
-Register a new user.
+* `POST /register` – Register a new user (assigned the "user" role by default)
+* `POST /login` – Login and get a JWT token
+* `POST /change-password` – Authenticated users can update their password
 
-**Request Body:**
+### User Management (Admin only)
 
-```json
-{
-  "username": "newuser",
-  "password": "securepassword"
-}
+* `GET /users` – List all users and their roles
+* `DELETE /users/{username}` – Delete a user
+* `POST /users/role` – Assign a role to a user
+
+### Role Management (Admin only)
+
+* `POST /roles` – Create a new role
+* `GET /roles` – List all roles
+* `DELETE /roles/{role_name}` – Delete a role
+
+### Protected Routes
+
+* `GET /dashboard` – Accessible to any authenticated user
+* `GET /admin` – Accessible only to users with the "admin" role
+
+## How Roles Work
+
+* Roles are stored in a separate table (`roles`)
+* A user can have multiple roles (many-to-many relationship)
+* Role access is checked using dependencies in `roles.py`
+
+Example of a route restricted to "admin" role:
+
+```python
+@app.get("/admin")
+def admin_dashboard(
+    current_user=Depends(auth.get_current_user),
+    _=Depends(roles.require_role("admin"))
+):
+    return {"msg": f"Welcome admin {current_user.username}!"}
 ```
 
----
+## Database
 
-### `POST /login`
-
-Login with username and password. Returns a JWT token.
-
-**Form Data:**
-
-* `username`
-* `password`
-
-**Response:**
-
-```json
-{
-  "access_token": "<token>",
-  "token_type": "bearer"
-}
-```
-
----
-
-### `GET /dashboard`
-
-Protected route. Accessible to any authenticated user.
-
-**Headers:**
-
-```
-Authorization: Bearer <access_token>
-```
-
----
-
-### `GET /admin`
-
-Protected route. Only accessible to users with role `"admin"`.
-
-**Headers:**
-
-```
-Authorization: Bearer <access_token>
-```
-
----
-
-### `POST /change-password`
-
-Authenticated users can change their password.
-
-**Request Body:**
-
-```json
-{
-  "old_password": "currentpassword",
-  "new_password": "newsecurepassword"
-}
-```
-
----
-
-## Notes
-
-* Passwords are securely hashed using bcrypt.
-* JWT tokens include an expiration time (default: 30 minutes).
-* Admin user is created automatically at startup using credentials in the `.env` file.
-
----
-
-## Requirements
-
-* Python 3.8+
-* FastAPI
-* SQLAlchemy
-* passlib
-* python-jose
-* python-dotenv
-
-See `requirements.txt` for all dependencies.
+* SQLite is used by default (via `users.db`)
+* Tables are auto-created on startup
 
 ---
 

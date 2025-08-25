@@ -15,3 +15,10 @@ class Token(BaseModel):
 class ChangePasswordRequest(BaseModel):
     old_password: str
     new_password: str
+
+class RoleCreate(BaseModel):
+    name: str
+
+class UserRoleUpdate(BaseModel):
+    username: str
+    role: str
