@@ -46,42 +46,56 @@ const UserManagement = () => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return (
+    <div className="loading-container">
+      <div className="spinner"></div>
+    </div>
+  );
 
   return (
-    <div>
+    <div className="main-content">
       <h2>User Management</h2>
-      {error && <p className="error">{error}</p>}
-      <table>
-        <thead>
-          <tr>
-            <th>Username</th>
-            <th>Roles</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map(user => (
-            <tr key={user.username}>
-              <td>{user.username}</td>
-              <td>
-                <select 
-                  value={user.roles[0] || ''} 
-                  onChange={(e) => updateUserRole(user.username, e.target.value)}
-                >
-                  <option value="">Select Role</option>
-                  {roles.map(role => (
-                    <option key={role} value={role}>{role}</option>
-                  ))}
-                </select>
-              </td>
-              <td>
-                <button onClick={() => deleteUser(user.username)}>Delete</button>
-              </td>
+      {error && <div className="alert alert-error">{error}</div>}
+      <div className="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Roles</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {users.map(user => (
+              <tr key={user.username}>
+                <td>{user.username}</td>
+                <td>
+                  <select 
+                    className="form-control"
+                    value={user.roles[0] || ''} 
+                    onChange={(e) => updateUserRole(user.username, e.target.value)}
+                  >
+                    <option value="">Select Role</option>
+                    {roles.map(role => (
+                      <option key={role} value={role}>{role}</option>
+                    ))}
+                  </select>
+                </td>
+                <td>
+                  <div className="table-actions">
+                    <button 
+                      className="btn btn-danger btn-sm"
+                      onClick={() => deleteUser(user.username)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

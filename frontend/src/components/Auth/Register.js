@@ -33,34 +33,45 @@ const Register = () => {
     <div className="auth-form">
       <h2>Register</h2>
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>Username:</label>
+        <div className="form-group">
+          <label className="form-label">Username:</label>
           <input
             type="text"
+            className="form-control"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
           />
         </div>
-        <div>
-          <label>Password:</label>
+        <div className="form-group">
+          <label className="form-label">Password:</label>
           <input
             type="password"
+            className="form-control"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
             minLength="8"
           />
         </div>
-        {error && <p className="error">{error}</p>}
-        {message && <p className="success">{message}</p>}
-        <button type="submit" disabled={loading}>
-          {loading ? 'Registering...' : 'Register'}
+        {error && <div className="alert alert-error">{error}</div>}
+        {message && <div className="alert alert-success">{message}</div>}
+        <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
+          {loading ? (
+            <div className="flex flex-center">
+              <div className="spinner"></div>
+              <span className="ml-2">Registering...</span>
+            </div>
+          ) : (
+            'Register'
+          )}
         </button>
       </form>
-      <p>
-        Already have an account? <Link to="/login">Login</Link>
-      </p>
+      <div className="form-footer">
+        <p>
+          Already have an account? <Link to="/login">Login</Link>
+        </p>
+      </div>
     </div>
   );
 };

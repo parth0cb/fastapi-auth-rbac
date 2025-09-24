@@ -22,23 +22,39 @@ const Dashboard = () => {
     fetchDashboard();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return (
+    <div className="loading-container">
+      <div className="spinner"></div>
+    </div>
+  );
 
   return (
-    <div>
+    <div className="main-content">
       <h2>Dashboard</h2>
-      <p>{message}</p>
-      {isAdmin && (
-        <div>
-          <h3>Admin Section</h3>
-          <p>
-            <Link to="/admin">Go to Admin Dashboard</Link>
-          </p>
+      <div className="dashboard-grid">
+        <div className="dashboard-card">
+          <h3>Welcome, {user.username}!</h3>
+          <p>{message}</p>
         </div>
-      )}
-      <p>
-        <Link to="/change-password">Change Password</Link>
-      </p>
+        
+        <div className="dashboard-card">
+          <h3>Account Settings</h3>
+          <p>Manage your account settings and security</p>
+          <Link to="/change-password" className="btn btn-outline">
+            Change Password
+          </Link>
+        </div>
+        
+        {isAdmin && (
+          <div className="dashboard-card">
+            <h3>Admin Panel</h3>
+            <p>Manage users and roles</p>
+            <Link to="/admin" className="btn btn-primary">
+              Go to Admin Dashboard
+            </Link>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

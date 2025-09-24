@@ -27,32 +27,43 @@ const Login = () => {
     <div className="auth-form">
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>Username:</label>
+        <div className="form-group">
+          <label className="form-label">Username:</label>
           <input
             type="text"
+            className="form-control"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
           />
         </div>
-        <div>
-          <label>Password:</label>
+        <div className="form-group">
+          <label className="form-label">Password:</label>
           <input
             type="password"
+            className="form-control"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
         </div>
-        {error && <p className="error">{error}</p>}
-        <button type="submit" disabled={loading}>
-          {loading ? 'Logging in...' : 'Login'}
+        {error && <div className="alert alert-error">{error}</div>}
+        <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
+          {loading ? (
+            <div className="flex flex-center">
+              <div className="spinner"></div>
+              <span className="ml-2">Logging in...</span>
+            </div>
+          ) : (
+            'Login'
+          )}
         </button>
       </form>
-      <p>
-        Don't have an account? <Link to="/register">Register</Link>
-      </p>
+      <div className="form-footer">
+        <p>
+          Don't have an account? <Link to="/register">Register</Link>
+        </p>
+      </div>
     </div>
   );
 };

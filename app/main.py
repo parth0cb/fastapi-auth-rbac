@@ -155,10 +155,11 @@ def change_password(
 
     user = db.query(models.User).filter(models.User.username == current_user.username).first()
     if not auth.verify_password(req.old_password, user.hashed_password):
-        raise HTTPException(status_code=401, detail="Old password is incorrect")
+        raise HTTPException(status_code=400, detail="Old password is incorrect")
 
     user.hashed_password = auth.get_password_hash(req.new_password)
     db.commit()
+    logger.info(f"Password updated successfully for user: {current_user.username}")
 
     return {"msg": "Password updated successfully"}
 

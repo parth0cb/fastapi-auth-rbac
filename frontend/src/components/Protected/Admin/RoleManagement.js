@@ -45,31 +45,67 @@ const RoleManagement = () => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return (
+    <div className="loading-container">
+      <div className="spinner"></div>
+    </div>
+  );
 
   return (
-    <div>
+    <div className="main-content">
       <h2>Role Management</h2>
-      {error && <p className="error">{error}</p>}
-      {message && <p className="success">{message}</p>}
-      <form onSubmit={createRole}>
-        <input
-          type="text"
-          value={newRole}
-          onChange={(e) => setNewRole(e.target.value)}
-          placeholder="New role name"
-          required
-        />
-        <button type="submit">Create Role</button>
-      </form>
-      <ul>
-        {roles.map(role => (
-          <li key={role}>
-            {role}
-            <button onClick={() => deleteRole(role)}>Delete</button>
-          </li>
-        ))}
-      </ul>
+      {error && <div className="alert alert-error">{error}</div>}
+      {message && <div className="alert alert-success">{message}</div>}
+      
+      <div className="card">
+        <h3>Create New Role</h3>
+        <form onSubmit={createRole} className="form-group">
+          <div className="form-group">
+            <input
+              type="text"
+              className="form-control"
+              value={newRole}
+              onChange={(e) => setNewRole(e.target.value)}
+              placeholder="New role name"
+              required
+            />
+          </div>
+          <button type="submit" className="btn btn-primary">
+            Create Role
+          </button>
+        </form>
+      </div>
+      
+      <div className="card">
+        <h3>Existing Roles</h3>
+        <div className="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Role Name</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {roles.map((role) => (
+                <tr key={role}>
+                  <td>{role}</td>
+                  <td>
+                    <div className="table-actions">
+                      <button 
+                        className="btn btn-danger btn-sm"
+                        onClick={() => deleteRole(role)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 };

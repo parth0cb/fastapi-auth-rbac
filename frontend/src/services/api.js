@@ -15,7 +15,10 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401 || error.response?.status === 403) {
+    const status = error.response?.status;
+    const currentPath = window.location.pathname;
+
+    if ((status === 401 || status === 403) && currentPath !== '/login') {
       localStorage.removeItem('token');
       window.location.href = '/login';
     }

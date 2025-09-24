@@ -22,18 +22,37 @@ const AdminDashboard = () => {
     fetchAdminDashboard();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return (
+    <div className="loading-container">
+      <div className="spinner"></div>
+    </div>
+  );
 
   return (
-    <div>
+    <div className="main-content">
       <h2>Admin Dashboard</h2>
-      <p>{message}</p>
-      <div>
-        <h3>Management</h3>
-        <ul>
-          <li><Link to="/admin/users">Manage Users</Link></li>
-          <li><Link to="/admin/roles">Manage Roles</Link></li>
-        </ul>
+      <div className="card">
+        <p>{message}</p>
+      </div>
+      
+      <div className="admin-dashboard-grid">
+        <div className="admin-card">
+          <div>👥</div>
+          <h3>User Management</h3>
+          <p>Manage users and their roles</p>
+          <Link to="/admin/users" className="btn btn-primary">
+            Manage Users
+          </Link>
+        </div>
+        
+        <div className="admin-card">
+          <div>🔒</div>
+          <h3>Role Management</h3>
+          <p>Manage roles and permissions</p>
+          <Link to="/admin/roles" className="btn btn-primary">
+            Manage Roles
+          </Link>
+        </div>
       </div>
     </div>
   );
