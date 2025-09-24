@@ -151,18 +151,24 @@ def change_password(
     db: Session = Depends(get_db),
     current_user=Depends(auth.get_current_user)
 ):
-    validate_password_strength(req.new_password)
+    try:
+        validate_password_strength(req.new_password)
+        user = db.query(models.User).filter(models.User.username == current_user.username).first()
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        if not auth.verify_password(req.old_password, user.hashed_password):
+            raise HTTPException(status_code=400, detail="Old password is incorrect")
+        user.hashed_password = auth.get_password_hash(req.new_password)
+        db.commit()
+        return {"msg": "Password updated successfully"}
 
-    user = db.query(models.User).filter(models.User.username == current_user.username).first()
-    if not auth.verify_password(req.old_password, user.hashed_password):
-        raise HTTPException(status_code=400, detail="Old password is incorrect")
+    except HTTPException as http_exc:
+        raise http_exc
 
-    user.hashed_password = auth.get_password_hash(req.new_password)
-    db.commit()
-    logger.info(f"Password updated successfully for user: {current_user.username}")
-
-    return {"msg": "Password updated successfully"}
-
+    except Exception as e:
+        db.rollback()
+        logger.exception(f"Unexpected error while changing password for user {current_user.username}: {e}")
+        raise HTTPException(status_code=500, detail="An error occurred while changing the password")
 
 @app.post("/roles", dependencies=[Depends(roles.require_role("admin"))])
 def create_role(role: RoleCreate, db: Session = Depends(get_db)):
