@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Depends, HTTPException, Body
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from dotenv import load_dotenv
@@ -11,6 +12,8 @@ from dotenv import load_dotenv
 from . import models, schemas, auth, database, roles
 from .database import engine, SessionLocal
 from .schemas import ChangePasswordRequest, RoleCreate, UserRoleUpdate
+
+from pydantic import BaseModel
 
 # Load environment variables
 load_dotenv()
@@ -64,6 +67,22 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+origins = [
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
 # Basic password strength check
 def validate_password_strength(password: str):
     if len(password) < 8:
@@ -105,9 +124,9 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 
 @app.post("/login", response_model=schemas.Token)
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    user = db.query(models.User).filter(models.User.username == form_data.username).first()
-    if not user or not auth.verify_password(form_data.password, user.hashed_password):
+def login(data: LoginRequest, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.username == data.username).first()
+    if not user or not auth.verify_password(data.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Incorrect username or password")
     access_token = auth.create_access_token(data={"sub": user.username})
     return {"access_token": access_token, "token_type": "bearer"}

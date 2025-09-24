@@ -1,5 +1,54 @@
-venv/
+users.db
+
+# Python / FastAPI
 __pycache__/
 *.pyc
+*.py[cod]
+*.pyo
+*.pyd
+*.env
 .env
-users.db
+venv/
+env/
+env.bak/
+*.sqlite3
+*.log
+
+# VSCode
+.vscode/
+
+# PyCharm
+.idea/
+
+# Python packaging
+*.egg-info/
+dist/
+build/
+
+# pytest
+.cache/
+.pytest_cache/
+
+# mypy
+.mypy_cache/
+
+# React / Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# React build output
+/build
+/dist
+
+# dotenv local environment variables
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Misc
+.DS_Store
