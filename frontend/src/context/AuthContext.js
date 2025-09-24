@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import jwtDecode from 'jwt-decode';
 import api from '../services/api';
+import axios from 'axios';
 
 const AuthContext = createContext();
 
@@ -33,8 +34,16 @@ export const AuthProvider = ({ children }) => {
 
   const checkAdminStatus = async () => {
     try {
-      await api.get('/admin');
-      setIsAdmin(true);
+      // Use axios directly to avoid triggering the 403 interceptor
+      const token = localStorage.getItem('token');
+      if (token) {
+        await axios.get(`${process.env.REACT_APP_API_URL}/admin`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setIsAdmin(true);
+      } else {
+        setIsAdmin(false);
+      }
     } catch (error) {
       if (error.response?.status === 403) {
         setIsAdmin(false);
