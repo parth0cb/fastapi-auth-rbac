@@ -1,150 +1,195 @@
-# FastAPI Auth RBAC
+# RBAC Authentication System (FastAPI + React)
 
-This project is a secure RBAC based user authentication system built using FastAPI, SQLAlchemy, JWT, and bcrypt. It provides user registration, login, password management, and role assignment features, with secure route protection based on roles.
+A full-featured authentication and role-based access control (RBAC) system built with FastAPI (backend) and React (frontend). This project provides a complete authentication solution with user registration, login, password management, and role-based access control.
 
 ## Features
 
-* User Registration
-* User Login with JWT Authentication
-* Role-based Access Control
-* Password Hashing (bcrypt)
-* Change Password Functionality
-* Admin user auto-creation on startup
-* SQLite database support
-* Admin can create roles
-* Admin can change roles of users
-* Admin can delete users
-* Login session expires after 30 minutes
+- **User Authentication**: Secure user registration and login with JWT tokens
+- **Password Management**: Password hashing with bcrypt and strength validation
+- **Role-Based Access Control (RBAC)**: Flexible role management system with protected routes
+- **Admin Dashboard**: Specialized admin interface for user and role management
+- **Protected Routes**: Frontend and backend route protection based on user roles
+- **Automatic Admin Setup**: Automatic creation of admin user and roles on first run
+- **CORS Support**: Properly configured CORS for frontend-backend communication
 
----
+## Tech Stack
 
-## Directory Structure
+### Backend
+- **FastAPI**: Modern, fast web framework for building APIs with Python 3.7+
+- **SQLAlchemy**: SQL toolkit and Object-Relational Mapping (ORM) library
+- **SQLite**: Lightweight database (easily replaceable with PostgreSQL, MySQL, etc.)
+- **JWT**: JSON Web Tokens for secure authentication
+- **Bcrypt**: Password hashing for security
+- **Pydantic**: Data validation and settings management
 
-```
-fastapi-auth-rbac/
-│
-├── app/                   # Application source code
-│   ├── auth.py            # Authentication logic (login, password hashing, JWT)
-│   ├── database.py        # Database connection and session setup
-│   ├── main.py            # Main FastAPI app with routes
-│   ├── models.py          # SQLAlchemy models
-│   ├── roles.py           # Role checking dependencies
-│   └── schemas.py         # Pydantic schemas for request/response models
-│
-├── users.db               # SQLite database file (auto-generated)
-├── .env                   # Environment variables
-├── .env.example           # Example env file
-├── .gitignore             # Git ignored files
-├── requirements.txt       # Project dependencies
-├── README.md              # Project documentation
-└── LICENCE                # MIT Licence
-```
+### Frontend
+- **React**: JavaScript library for building user interfaces
+- **React Router**: Declarative routing for React
+- **Axios**: Promise-based HTTP client for API requests
+- **JWT-decode**: Library for decoding JWT tokens
 
----
-
-## Setup Instructions
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/parth0cb/fastapi-auth-rbac.git
-cd fastapi-auth-rbac
-```
-
-### 2. Create a Virtual Environment
-
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-### 3. Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Environment Variables
-
-Create a `.env` file by copying the example:
-
-```bash
-cp .env.example .env
-```
-
-Edit `.env` as needed:
+## Project Structure
 
 ```
-ADMIN_USERNAME=admin
-ADMIN_PASSWORD=admin123
-SECRET_KEY=yoursecretkey
+.
+├── app/                    # Backend FastAPI application
+│   ├── __init__.py         # Package initialization
+│   ├── auth.py             # Authentication utilities (JWT, password hashing)
+│   ├── database.py         # Database configuration
+│   ├── dependencies.py     # Dependency injection utilities
+│   ├── main.py             # Main application entry point and routes
+│   ├── models.py           # Database models (User, Role)
+│   ├── roles.py            # Role-based access control utilities
+│   └── schemas.py          # Pydantic schemas for data validation
+├── frontend/               # Frontend React application
+│   ├── public/             # Public assets
+│   └── src/                # React source code
+│       ├── components/     # React components organized by feature
+│       │   ├── Auth/       # Authentication components (Login, Register)
+│       │   ├── Layout/     # Layout components (Header, ProtectedRoute)
+│       │   └── Protected/  # Protected components (Dashboard, Admin)
+│       ├── context/        # React context for authentication state
+│       ├── services/       # API service functions
+│       ├── App.js          # Main App component
+│       └── index.js        # Entry point
+├── .env.example            # Environment variables example
+├── requirements.txt        # Python dependencies
+└── README.md              # This file
 ```
 
-- `ADMIN_USERNAME` and `ADMIN_PASSWORD` will be used to auto-create the admin account on server startup if it doesn't already exist.
-- `SECRET_KEY` is used by the application for cryptographic operations such as session management, signing cookies, or other security-related features. Make sure to set this to a strong, unique value.
+## Getting Started
 
-### 5. Run the Application
+### Prerequisites
 
-```bash
-uvicorn app.main:app --reload
-```
+- Python 3.7+
+- Node.js 14+
+- npm (comes with Node.js)
 
-Server will start at `http://127.0.0.1:8000`
+### Backend Setup
 
-You can access the interactive API documentation (Swagger UI) at:
-`http://127.0.0.1:8000/docs`
+1. Clone the repository:
+   ```bash
+   git clone git@github.com:parth0cb/fastapi-auth-rbac.git
+   cd fastapi-auth-rbac
+   ```
 
----
+2. Create a virtual environment and activate it:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
 
-## API Endpoints
+3. Install Python dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-### Authentication
+4. Create a `.env` file based on `.env.example`:
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Edit `.env` to set your own values:
+   ```
+   ADMIN_USERNAME=admin
+   ADMIN_PASSWORD=your_secure_password
+   SECRET_KEY=your_secret_key_here
+   ```
 
-* `POST /register` – Register a new user (assigned the "user" role by default)
-* `POST /login` – Login and get a JWT token
-* `POST /change-password` – Authenticated users can update their password
+5. Run the FastAPI server:
+   ```bash
+   uvicorn app.main:app --reload
+   ```
 
-### User Management (Admin only)
+   The backend will be available at `http://localhost:8000`
 
-* `GET /users` – List all users and their roles
-* `DELETE /users/{username}` – Delete a user
-* `POST /users/role` – Assign a role to a user
+### Frontend Setup
 
-### Role Management (Admin only)
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
 
-* `POST /roles` – Create a new role
-* `GET /roles` – List all roles
-* `DELETE /roles/{role_name}` – Delete a role
+2. Install Node.js dependencies:
+   ```bash
+   npm install
+   ```
 
-### Protected Routes
+3. Start the React development server:
+   ```bash
+   npm start
+   ```
 
-* `GET /dashboard` – Accessible to any authenticated user
-* `GET /admin` – Accessible only to users with the "admin" role
+   The frontend will be available at `http://localhost:3000`
 
-## How Roles Work
+## Usage
 
-* Roles are stored in a separate table (`roles`)
-* A user can have multiple roles (many-to-many relationship)
-* Role access is checked using dependencies in `roles.py`
+### Default Admin User
 
-Example of a route restricted to "admin" role:
+On first run, an admin user is automatically created with:
+- Username: `admin` (or as specified in `.env`)
+- Password: `admin123` (or as specified in `.env`)
 
-```python
-@app.get("/admin")
-def admin_dashboard(
-    current_user=Depends(auth.get_current_user),
-    _=Depends(roles.require_role("admin"))
-):
-    return {"msg": f"Welcome admin {current_user.username}!"}
-```
+You should change this password after first login for security.
 
-## Database
+### Roles
 
-* SQLite is used by default (via `users.db`)
-* Tables are auto-created on startup
+The system comes with two default roles:
+- `user`: Standard user role
+- `admin`: Administrator role with full access
 
----
+Additional roles can be created through the admin interface or API.
+
+### API Endpoints
+
+| Endpoint | Method | Description | Authentication | Role Required |
+|----------|--------|-------------|----------------|---------------|
+| `/register` | POST | Register a new user | None | None |
+| `/login` | POST | User login | None | None |
+| `/dashboard` | GET | User dashboard | JWT Token | Any |
+| `/admin` | GET | Admin dashboard | JWT Token | admin |
+| `/change-password` | POST | Change user password | JWT Token | Any |
+| `/roles` | POST | Create new role | JWT Token | admin |
+| `/roles/{name}` | DELETE | Delete role | JWT Token | admin |
+| `/users/role` | POST | Update user role | JWT Token | admin |
+| `/users/{username}` | DELETE | Delete user | JWT Token | admin |
+| `/users` | GET | List all users | JWT Token | admin |
+| `/roles` | GET | List all roles | JWT Token | admin |
+
+### Frontend Routes
+
+| Route | Description | Authentication | Role Required |
+|-------|-------------|----------------|---------------|
+| `/login` | User login | None | None |
+| `/register` | User registration | None | None |
+| `/dashboard` | User dashboard | Required | Any |
+| `/admin` | Admin dashboard | Required | admin |
+| `/change-password` | Change password | Required | Any |
+
+## Development
+
+### Backend Development
+
+The backend uses FastAPI with automatic API documentation available at:
+- Swagger UI: `http://localhost:8000/docs`
+- ReDoc: `http://localhost:8000/redoc`
+
+### Frontend Development
+
+The frontend is organized into:
+- **Auth Components**: Login, Register, ChangePassword
+- **Layout Components**: Header, ProtectedRoute (HOC for route protection)
+- **Protected Components**: Dashboard, AdminDashboard, RoleManagement, UserManagement
+- **Context**: AuthContext for managing authentication state
+- **Services**: API service functions for backend communication
+
+## Security Considerations
+
+- Always change the default admin password after first login
+- Use a strong SECRET_KEY in production
+- Consider using a more robust database (PostgreSQL, MySQL) for production
+- Implement additional security measures as needed for your use case
 
 ## License
 
-This project is open source and available under the MIT License.
+MIT License

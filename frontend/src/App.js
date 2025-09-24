@@ -22,7 +22,7 @@ function App() {
             <Route path="/" element={
               <div className="main-content">
                 <div className="card">
-                  <h2>Welcome to FastAPI Auth RBAC</h2>
+                  <h2>Welcome to RBAC Authentication System</h2>
                   <p>This is a role-based access control system built with FastAPI and React.</p>
                   <p>Please <a href="/login">login</a> or <a href="/register">register</a> to continue.</p>
                 </div>

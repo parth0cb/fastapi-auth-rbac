@@ -14,7 +14,7 @@ const Header = () => {
   return (
     <header>
       <div className="header-content">
-        <h1 className="header-title">FastAPI Auth RBAC</h1>
+        <h1 className="header-title">RBAC Authentication System</h1>
         <nav className="header-nav">
           {user ? (
             <>
